@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 Spring Capstone — Student Cards</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap');
+
+  :root {
+    --t1: #6c63ff;   /* Team 1 - 보라 */
+    --t5: #00b894;   /* Team 5 - 초록 */
+    --t8: #fd79a8;   /* Team 8 - 핑크 */
+    --t18: #e17055;  /* Team 18 - 주황 */
+    --t19: #0984e3;  /* Team 19 - 파랑 */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #0f0f1a;
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #fff;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #a29bfe, #fd79a8, #fdcb6e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+  }
+
+  .team-section { margin-bottom: 50px; }
+
+  .team-title {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding: 6px 16px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  /* ── 카드 본체 ── */
+  .card {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    background: #1a1a2e;
+    border: 2px solid transparent;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: default;
+  }
+  .card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  /* 카드 상단 헤더 */
+  .card-header {
+    padding: 20px 20px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-header::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+
+  .card-type {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-bottom: 6px;
+  }
+
+  .card-name {
+    font-size: 1.6rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  .card-meta {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .team-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+
+  /* 아이콘 이모지 큰 것 */
+  .card-icon {
+    position: absolute;
+    top: 14px; right: 18px;
+    font-size: 2.4rem;
+    opacity: 0.85;
+  }
+
+  /* 카드 본문 */
+  .card-body {
+    padding: 16px 20px 20px;
+    background: #16213e;
+  }
+
+  /* 스킬 스탯 바 */
+  .stats { margin-bottom: 14px; }
+  .stat-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 7px;
+  }
+  .stat-label {
+    font-size: 0.68rem;
+    width: 68px;
+    flex-shrink: 0;
+    opacity: 0.8;
+    font-weight: 600;
+  }
+  .stat-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .stat-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+  }
+  .stat-val {
+    font-size: 0.68rem;
+    width: 24px;
+    text-align: right;
+    opacity: 0.6;
+    font-weight: 700;
+  }
+
+  /* 태그 */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.1);
+    letter-spacing: 0.5px;
+  }
+
+  /* 스페셜 어빌리티 */
+  .ability {
+    background: rgba(255,255,255,0.05);
+    border-left: 3px solid;
+    padding: 8px 12px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 10px;
+  }
+  .ability-name {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    opacity: 0.8;
+  }
+  .ability-desc {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    opacity: 0.7;
+  }
+
+  /* 팀 스토리 */
+  .story {
+    font-size: 0.72rem;
+    line-height: 1.6;
+    opacity: 0.55;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    padding-top: 10px;
+    font-style: italic;
+  }
+
+  /* 포인트 뱃지 */
+  .power-badge {
+    position: absolute;
+    bottom: -2px; right: 16px;
+    background: linear-gradient(135deg, #ffd700, #ff9500);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 900;
+    padding: 3px 10px;
+    border-radius: 10px 10px 0 0;
+    letter-spacing: 1px;
+  }
+
+  /* ── 팀별 색상 ── */
+  .t1 .card-header  { background: linear-gradient(135deg, #6c63ff, #a29bfe); }
+  .t1.card          { border-color: #6c63ff44; }
+  .t1 .stat-bar     { background: linear-gradient(90deg, #6c63ff, #a29bfe); }
+  .t1 .ability      { border-color: #a29bfe; }
+
+  .t5 .card-header  { background: linear-gradient(135deg, #00b894, #55efc4); }
+  .t5.card          { border-color: #00b89444; }
+  .t5 .stat-bar     { background: linear-gradient(90deg, #00b894, #55efc4); }
+  .t5 .ability      { border-color: #55efc4; }
+
+  .t8 .card-header  { background: linear-gradient(135deg, #e84393, #fd79a8); }
+  .t8.card          { border-color: #fd79a844; }
+  .t8 .stat-bar     { background: linear-gradient(90deg, #e84393, #fd79a8); }
+  .t8 .ability      { border-color: #fd79a8; }
+
+  .t18 .card-header { background: linear-gradient(135deg, #d63031, #e17055); }
+  .t18.card         { border-color: #e1705544; }
+  .t18 .stat-bar    { background: linear-gradient(90deg, #d63031, #fdcb6e); }
+  .t18 .ability     { border-color: #e17055; }
+
+  .t19 .card-header { background: linear-gradient(135deg, #0652dd, #0984e3); }
+  .t19.card         { border-color: #0984e344; }
+  .t19 .stat-bar    { background: linear-gradient(90deg, #0652dd, #74b9ff); }
+  .t19 .ability     { border-color: #74b9ff; }
+
+  /* 특수 뱃지 */
+  .award { background: linear-gradient(135deg, #ffd700, #ff9500) !important; color: #000; }
+</style>
+</head>
+<body>
+
+<h1>⚡ EWHA CAPSTONE 2026 ⚡</h1>
+<p class="subtitle">SPRING SEMESTER · STUDENT ABILITY CARDS · 10 PLAYERS</p>
+
+<!-- ══════════════════ TEAM 1 ══════════════════ -->
+<div class="team-section">
+  <div class="team-title" style="background:#6c63ff22;color:#a29bfe;">▎ TEAM 1 · AI & Climate Research</div>
+  <div class="cards-grid">
+
+    <!-- 설영은 -->
+    <div class="card t1">
+      <div class="card-header">
+        <div class="card-type">Backend · CV · AI</div>
+        <div class="card-name">설영은</div>
+        <div class="card-meta">
+          <span class="team-badge">Team 1</span>
+          <span>2448052</span>
+        </div>
+        <div class="card-icon">🎯</div>
+      </div>
+      <div class="card-body">
+        <div class="stats">
+          <div class="stat-row"><span class="stat-label">AI / ML</span><div class="stat-bar-bg"><div class="stat-bar" style="width:88%"></div></div><span class="stat-val">88</span></div>
+          <div class="stat-row"><span class="stat-label">Backend</span><div class="stat-bar-bg"><div class="stat-bar" style="width:80%"></div></div><span class="stat-val">80</span></div>
+          <div class="stat-row"><span class="stat-label">DevOps</span><div class="stat-bar-bg"><div class="stat-bar" style="width:72%"></div></div><span class="stat-val">72</span></div>
+          <div class="stat-row"><span class="stat-label">Research</span><div class="stat-bar-bg"><div class="stat-bar" style="width:75%"></div></div><span class="stat-val">75</span></div>
+        </div>
+        <div class="tags">
+          <span class="tag award">🏆 최우수상</span>
+          <span class="tag">YOLO</span><span class="tag">딥러닝</span>
+          <span class="tag">컴퓨터비전</span><span class="tag">AWS</span>
+        </div>
+        <div class="ability">
+          <div class="ability-name">✦ Special: Full-Cycle Deployer</div>
+          <div class="ability-desc">모델 학습부터 AWS 배포까지 혼자 처리. 차(Tea) 추천 서비스로 최우수상 수상.</div>
+        </div>
+        <div class="story">"최근 AI 연구에 관심이 생겨 대학원 진학을 목표로, 컴퓨터비전·딥러닝을 중심으로 공부 중."</div>
+      </div>
+      <div class="power-badge">PWR 415</div>
+    </div>
+
+    <!-- 신지민 -->
+    <div class="card t1">
+      <div class="card-header">
+        <div class="card-type">Frontend · Community · AI</div>
+        <div class="card-name">신지민</div>
+        <div class="card-meta">
+          <span class="team-badge">Team 1</span>
+          <span>2466033</span>
+        </div>
+        <div class="card-icon">🌐</div>
+      </div>
+      <div class="card-body">
+        <div class="stats">
+          <div class="stat-row"><span class="stat-label">Frontend</span><div class="stat-bar-bg"><div class="stat-bar" style="width:75%"></div></div><span class="stat-val">75</span></div>
+          <div class="stat-row"><span class="stat-label">AI / ML</span><div class="stat-bar-bg"><div class="stat-bar" style="width:60%"></div></div><span class="stat-val">60</span></div>
+          <div class="stat-row"><span class="stat-label">협업</span><div class="stat-bar-bg"><div class="stat-bar" style="width:82%"></div></div><span class="stat-val">82</span></div>
+          <div class="stat-row"><span class="stat-label">기획력</span><div class="stat-bar-bg"><div class="stat-bar" style="width:78%"></div></div><span class="stat-val">78</span></div>
+        </div>
+        <div class="tags">
+          <span class="tag">HTML/CSS/JS</span><span class="tag">Git</span>
+          <span class="tag">사회적가치</span><span class="tag">이화여대</span>
+        </div>
+        <div class="ability">
+          <div class="ability-name">✦ Special: Social Impact Builder</div>
+          <div class="ability-desc">독거노인 배달, 맞벌이 가정 앱 등 사회적 약자를 위한 서비스에 집중.</div>
+        </div>
+        <div class="story">"비슷한 시기에 AI에 관심이 생겼고, 이화여대 커뮤니티 중심 프로젝트 다수 참여."</div>
+      </div>
+      <div class="power-badge">PWR 295</div>
+    </div>
+
+    <!-- 윤희서 -->
+    <div class="card t1">
+      <div class="card-header">
+        <div class="card-type">ML Research · Multimodal</div>
+        <div class="card-name">윤희서</div>
+        <div class="card-meta">
+          <span class="team-badge">Team 1</span>
+          <span>2476199</span>
+        </div>
+        <div class="card-icon">🔬</div>
+      </div>
+      <div class="card-body">
+        <div class="stats">
+          <div class="stat-row"><span class="stat-label">AI / ML</span><div class="stat-bar-bg"><div class="stat-bar" style="width:85%"></div></div><span class="stat-val">85</span></div>
+          <div class="stat-row"><span class="stat-label">Research</span><div class="stat-bar-bg"><div class="stat-bar" style="width:82%"></div></div><span class="stat-val">82</span></div>
+          <div class="stat-row"><span class="stat-label">Frontend</span><div class="stat-bar-bg"><div class="stat-bar" style="width:60%"></div></div><span class="stat-val">60</span></div>
+          <div class="stat-row"><span class="stat-label">데이터</span><div class="stat-bar-bg"><div class="stat-bar" style="width:70%"></div></div><span class="stat-val">70</span></div>
+        </div>
+        <div class="tags">
+          <span class="tag">멀티모달</span><span class="tag">도메인 적응</span>
+          <span class="tag">기후 AI</span><span class="tag">PyTorch</span>
+        </div>
+        <div class="ability">
+          <div class="ability-name">✦ Special: Domain Adapter</div>
+          <div class="ability-desc">멀티모달 기상 데이터 간 도메인 불일치 해결 연구. AI×기후 융합 탐구.</div>
+        </div>
+        <div class="story">"데이터와 모델이 실제 서비스에 적용되는 과정에 흥미. 멀티모달 도메인 적응 연구 탐구 중."</div>
+      </div>
+      <div class="power-badge">PWR 337</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════ TEAM 5 ══════════════════ -->
+<div class="team-section">
+  <div class="team-title" style="background:#00b89422;color:#55efc4;">▎ TEAM 5 · Game & Interactive</div>
+  <div class="cards-grid">
+
+    <!-- 윤민주 -->
+    <div class="card t5">
+      <div class="card-header">
+        <div class="card-type">Game Dev · Unity · VR</div>
+        <div class="card-name">윤민주</div>
+        <div class="card-meta">
+          <span class="team-badge">Team 5</span>
+          <span>2271043</span>
+        </div>
+        <div class="card-icon">🎮</div>
+      </div>
+      <div class="card-body">
+        <div class="stats">
+          <div class="stat-row"><span class="stat-label">게임 개발</span><div class="stat-bar-bg"><div class="stat-bar" style="width:90%"></div></div><span class="stat-val">90</span></div>
+          <div class="stat-row"><span class="stat-label">Unity/3D</span><div class="stat-bar-bg"><div class="stat-bar" style="width:85%"></div></div><span class="stat-val">85</span></div>
+          <div class="stat-row"><span class="stat-label">C++ / C#</span><div class="stat-bar-bg"><div class="stat-bar" style="width:78%"></div></div><span class="stat-val">78</span></div>
+          <div class="stat-row"><span class="stat-label">VR / XR</span><div class="stat-bar-bg"><div class="stat-bar" style="width:70%"></div></div><span class="stat-val">70</span></div>
+        </div>
+        <div class="tags">
+          <span class="tag">Unity 2D/3D</span><span class="tag">C#</span>
+          <span class="tag">VR</span><span class="tag">그래픽스</span><span class="tag">로그라이크</span>
+        </div>
+        <div class="ability">
+          <div class="ability-name">✦ Special: Solo Game Crafter</div>
+          <div class="ability-desc">팀 협동 게임부터 혼자 만든 모바일 퍼즐 게임까지. 유니티 에디터 마스터.</div>
+        </div>
+        <div class="story">"게임이라는 같은 관심 주제로 팀이 구성. 액션 로그라이크·2인 협동·퍼즐 게임 제작 경험."</div>
+      </div>
+      <div class="power-badge">PWR 323</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════ TEAM 8 ══════════════════ -->
+<div class="team-section">
+  <div class="team-title" style="background:#fd79a822;color:#fd79a8;">▎ TEAM 8 · Client & Design</div>
+  <div class="cards-grid">
+
+    <!-- 김수연 -->
+    <div class="card t8">
+      <div class="card-header">
+        <div class="card-type">iOS · Frontend · Design</div>
+        <div class="card-name">김수연</div>
+        <div class="card-meta">
+          <span class="team-badge">Team 8</span>
+          <span>2198015</span>
+        </div>
+        <div class="card-icon">📱</div>
+      </div>
+      <div class="card-body">
+        <div class="stats">
+          <div class="stat-row"><span class="stat-label">iOS 개발</span><div class="stat-bar-bg"><div class="stat-bar" style="width:88%"></div></div><span class="stat-val">88</span></div>
+          <div class="stat-row"><span class="stat-label">Frontend</span><div class="stat-bar-bg"><div class="stat-bar" style="width:82%"></div></div><span class="stat-val">82</span></div>
+          <div class="stat-row"><span class="stat-label">UI/UX</span><div class="stat-bar-bg"><div class="stat-bar" style="width:85%"></div></div><span class="stat-val">85</span></div>
+          <div class="stat-row"><span class="stat-label">출시 경험</span><div class="stat-bar-bg"><div class="stat-bar" style="width:90%"></div></div><span class="stat-val">90</span></div>
+        </div>
+        <div class="tags">
+          <span class="tag award">🚀 실서비스 출시</span>
+          <span class="tag">iOS</span><span class="tag">Swift</span>
+          <span class="tag">디자인</span><span class="tag">클라이언트</span>
+        </div>
+        <div class="ability">
+          <div class="ability-name">✦ Special: Ship It Queen</div>
+          <div class="ability-desc">실제로 서비스를 앱스토어에 출시한 경험 보유. 시각적 산출물 전문가.</div>
+        </div>
+        <div class="story">"첫 강의에서 하고 싶은 파트가 맞는 인원끼리 팀 구성. iOS·프론트엔드·디자인 담당."</div>
+      </div>
+      <div class="power-badge">PWR 345</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════ TEAM 18 ══════════════════ -->
+<div class="team-section">
+  <div class="team-title" style="background:#e1705522;color:#e17055;">▎ TEAM 18 · AI Services & Product</div>
+  <div class="cards-grid">
+
+    <!-- 김나경 -->
+    <div class="card t18">
+      <div class="card-header">
+        <div class="card-type">LLM · RAG · AI Agent</div>
+        <div class="card-name">김나경</div>
+        <div class="card-meta">
+          <span class="team-badge">Team 18</span>
+          <span>2271010</span>
+        </div>
+        <div class="card-icon">🤖</div>
+      </div>
+      <div class="card-body">
+        <div class="stats">
+          <div class="stat-row"><span class="stat-label">LLM / RAG</span><div class="stat-bar-bg"><div class="stat-bar" style="width:90%"></div></div><span class="stat-val">90</span></div>
+          <div class="stat-row"><span class="stat-label">AI 서비스</span><div class="stat-bar-bg"><div class="stat-bar" style="width:88%"></div></div><span class="stat-val">88</span></div>
+          <div class="stat-row"><span class="stat-label">Android</span><div class="stat-bar-bg"><div class="stat-bar" style="width:70%"></div></div><span class="stat-val">70</span></div>
+          <div class="stat-row"><span class="stat-label">기획력</span><div class="stat-bar-bg"><div class="stat-bar" style="width:80%"></div></div><span class="stat-val">80</span></div>
+        </div>
+        <div class="tags">
+          <span class="tag">LLM</span><span class="tag">RAG</span>
+          <span class="tag">AI Agent</span><span class="tag">챗봇</span><span class="tag">Android</span>
+        </div>
+        <div class="ability">
+          <div class="ability-name">✦ Special: AI Product Builder</div>
+          <div class="ability-desc">소상공인365 AI 챗봇, 과학동아 AI 서비스, AI 수학 게임 앱 등 다수 AI 서비스 출시.</div>
+        </div>
+        <div class="story">"수업에서 처음 만나 팀이 구성됨. LLM·RAG·AI Agent 분야에서 남보다 잘한다고 자부."</div>
+      </div>
+      <div class="power-badge">PWR 428</div>
+    </div>
+
+    <!-- 최현서 -->
+    <div class="card t18">
+      <div class="card-header">
+        <div class="card-type">Web · Teamwork · Product Sense</div>
+        <div class="card-name">최현서</div>
+        <div class="card-meta">
+          <span class="team-badge">Team 18</span>
+          <span>2171051</span>
+        </div>
+        <div class="card-icon">🌱</div>
+      </div>
+      <div class="card-body">
+        <div class="stats">
+          <div class="stat-row"><span class="stat-label">팀워크</span><div class="stat-bar-bg"><div class="stat-bar" style="width:92%"></div></div><span class="stat-val">92</span></div>
+          <div class="stat-row"><span class="stat-label">성실성</span><div class="stat-bar-bg"><div class="stat-bar" style="width:95%"></div></div><span class="stat-val">95</span></div>
+          <div class="stat-row"><span class="stat-label">Web 기초</span><div class="stat-bar-bg"><div class="stat-bar" style="width:55%"></div></div><span class="stat-val">55</span></div>
+          <div class="stat-row"><span class="stat-label">추진력</span><div class="stat-bar-bg"><div class="stat-bar" style="width:88%"></div></div><span class="stat-val">88</span></div>
+        </div>
+        <div class="tags">
+          <span class="tag">오픈SW</span><span class="tag">웹 기초</span>
+          <span class="tag">책임감</span><span class="tag">소통</span><span class="tag">성장형</span>
+        </div>
+        <div class="ability">
+          <div class="ability-name">✦ Special: Reliable Anchor</div>
+          <div class="ability-desc">전공 외 영역에서 팀워크 경험 다수. 성실성·추진력·책임감으로 팀을 지탱.</div>
+        </div>
+        <div class="story">"기술적 관심 영역 찾아가는 중. 컴공 외 영역의 폭넓은 팀 경험이 강점."</div>
+      </div>
+      <div class="power-badge">PWR 330</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════ TEAM 19 ══════════════════ -->
+<div class="team-section">
+  <div class="team-title" style="background:#0984e322;color:#74b9ff;">▎ TEAM 19 · Full-Stack & Data</div>
+  <div class="cards-grid">
+
+    <!-- 김겨레 -->
+    <div class="card t19">
+      <div class="card-header">
+        <div class="card-type">Backend · Infra · AI Lead</div>
+        <div class="card-name">김겨레</div>
+        <div class="card-meta">
+          <span class="team-badge">Team 19</span>
+          <span>2217003</span>
+        </div>
+        <div class="card-icon">⚙️</div>
+      </div>
+      <div class="card-body">
+        <div class="stats">
+          <div class="stat-row"><span class="stat-label">Backend</span><div class="stat-bar-bg"><div class="stat-bar" style="width:92%"></div></div><span class="stat-val">92</span></div>
+          <div class="stat-row"><span class="stat-label">Infra/CI</span><div class="stat-bar-bg"><div class="stat-bar" style="width:85%"></div></div><span class="stat-val">85</span></div>
+          <div class="stat-row"><span class="stat-label">AI 활용</span><div class="stat-bar-bg"><div class="stat-bar" style="width:80%"></div></div><span class="stat-val">80</span></div>
+          <div class="stat-row"><span class="stat-label">리더십</span><div class="stat-bar-bg"><div class="stat-bar" style="width:88%"></div></div><span class="stat-val">88</span></div>
+        </div>
+        <div class="tags">
+          <span class="tag">Spring</span><span class="tag">FastAPI</span>
+          <span class="tag">Infra</span><span class="tag">DevOps</span><span class="tag">리드 경험</span>
+        </div>
+        <div class="ability">
+          <div class="ability-name">✦ Special: End-to-End Lead</div>
+          <div class="ability-desc">협업 플로우 설계부터 배포까지 전 과정 경험. AI 활용으로 빠른 개발 및 안정성 확보.</div>
+        </div>
+        <div class="story">"팀장이 기획안을 들고 와서 먼저 제안. 개발 리드·타 파트 소통에 강점."</div>
+      </div>
+      <div class="power-badge">PWR 445</div>
+    </div>
+
+    <!-- 손하늘 -->
+    <div class="card t19">
+      <div class="card-header">
+        <div class="card-type">Data · PM · AI Insight</div>
+        <div class="card-name">손하늘</div>
+        <div class="card-meta">
+          <span class="team-badge">Team 19</span>
+          <span>2371037</span>
+        </div>
+        <div class="card-icon">📊</div>
+      </div>
+      <div class="card-body">
+        <div class="stats">
+          <div class="stat-row"><span class="stat-label">데이터</span><div class="stat-bar-bg"><div class="stat-bar" style="width:80%"></div></div><span class="stat-val">80</span></div>
+          <div class="stat-row"><span class="stat-label">AI 기획</span><div class="stat-bar-bg"><div class="stat-bar" style="width:78%"></div></div><span class="stat-val">78</span></div>
+          <div class="stat-row"><span class="stat-label">PM / 기획</span><div class="stat-bar-bg"><div class="stat-bar" style="width:82%"></div></div><span class="stat-val">82</span></div>
+          <div class="stat-row"><span class="stat-label">소통</span><div class="stat-bar-bg"><div class="stat-bar" style="width:85%"></div></div><span class="stat-val">85</span></div>
+        </div>
+        <div class="tags">
+          <span class="tag">데이터</span><span class="tag">AI</span>
+          <span class="tag">PM</span><span class="tag">비개발직군</span><span class="tag">의사결정</span>
+        </div>
+        <div class="ability">
+          <div class="ability-name">✦ Special: Data Democratizer</div>
+          <div class="ability-desc">비개발 직군이 데이터에 쉽게 접근하도록 돕는 AI 도구 개발 지향. it학회 PM 경험.</div>
+        </div>
+        <div class="story">"AI 활용하면 훨씬 좋은 결과물 가능. 기획자·비개발 직군의 데이터 접근성에 관심."</div>
+      </div>
+      <div class="power-badge">PWR 325</div>
+    </div>
+
+    <!-- 민지안 -->
+    <div class="card t19">
+      <div class="card-header">
+        <div class="card-type">Network · DB · Full-Stack</div>
+        <div class="card-name">민지안</div>
+        <div class="card-meta">
+          <span class="team-badge">Team 19</span>
+          <span>2371030</span>
+        </div>
+        <div class="card-icon">🔗</div>
+      </div>
+      <div class="card-body">
+        <div class="stats">
+          <div class="stat-row"><span class="stat-label">네트워크</span><div class="stat-bar-bg"><div class="stat-bar" style="width:82%"></div></div><span class="stat-val">82</span></div>
+          <div class="stat-row"><span class="stat-label">DB / SQL</span><div class="stat-bar-bg"><div class="stat-bar" style="width:78%"></div></div><span class="stat-val">78</span></div>
+          <div class="stat-row"><span class="stat-label">Backend</span><div class="stat-bar-bg"><div class="stat-bar" style="width:72%"></div></div><span class="stat-val">72</span></div>
+          <div class="stat-row"><span class="stat-label">Frontend</span><div class="stat-bar-bg"><div class="stat-bar" style="width:55%"></div></div><span class="stat-val">55</span></div>
+        </div>
+        <div class="tags">
+          <span class="tag">네트워크</span><span class="tag">SQL</span>
+          <span class="tag">AI 데이터</span><span class="tag">Backend</span><span class="tag">도전형</span>
+        </div>
+        <div class="ability">
+          <div class="ability-name">✦ Special: Spectrum Expander</div>
+          <div class="ability-desc">네트워크·DB 전문성 보유. 백엔드 기반에서 프론트엔드까지 영역 확장 도전 중.</div>
+        </div>
+        <div class="story">"원래는 백엔드 개발 중심이었으나, 새로운 역할인 프론트엔드에 도전하고 싶어 팀 합류."</div>
+      </div>
+      <div class="power-badge">PWR 287</div>
+    </div>
+
+  </div>
+</div>
+
+<p style="text-align:center;color:#444;font-size:0.75rem;margin-top:40px;">
+  Ewha Womans University · Capstone Design 2026 Spring · Auto-generated from survey data
+</p>
+
+</body>
+</html>
