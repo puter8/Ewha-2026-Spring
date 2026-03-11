@@ -14,7 +14,7 @@
 | [11](#team-11) | 알고리듬 |  |  |
 | [12](#team-12) | 404 | 산학 | 여성 1인 여행자를 위한 세이프티 가이드 서비스 제공 시스템 |
 | [13](#team-13) | Semicolone; |  |  |
-| [14](#team-14) | def | 연구 |  |
+| [14](#team-14) | def | 연구 | Agent AI 추론을 위한 메모리 효율 최적화 |
 | [15](#team-15) | 햄부기 | 연구 | Split-Computing Vision Inference System |
 | [16](#team-16) | 퓨터 | 산학|  CharacterAI |
 | [17](#team-17) | SPY |  |  |
